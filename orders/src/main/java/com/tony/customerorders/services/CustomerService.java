@@ -1,5 +1,6 @@
 package com.tony.customerorders.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.tony.customerorders.models.Customer;
@@ -9,7 +10,12 @@ public interface CustomerService {
 	
 	List<Customer> findAll();
 	
-	Customer findById(long id);
+	Customer findCustomerById(long id);
+	
+	//ArrayList<Customer> findByNameLike(String nameLike);
+	List<Customer> findByNameLike(String nameLike);
+	
+	List<String> findQueryNameLike(String nameLike);
 	
 	Customer save(Customer customer);
 	

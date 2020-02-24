@@ -3,6 +3,8 @@ package com.tony.customerorders.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,19 +31,19 @@ public class AgentServiceImpl implements AgentService {
 
 	@Override
 	public Agent findById(long id) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return agentrepos.findById(id).orElseThrow(()-> new EntityNotFoundException("Agent Id"+id+" not found."));
 	}
 
 	@Transactional
 	@Override
-	public Agent save(Agent agent) {
+	public Agent save(Agent changeAgent) {
 		Agent newAgent = new Agent();
-		newAgent.setAgentname(agent.getAgentname());
-		newAgent.setPhone(agent.getPhone());
+		newAgent.setAgentname(changeAgent.getAgentname());
+		newAgent.setPhone(changeAgent.getPhone());
 		
-		for (Customer a: agent.getCustomers()) {
-			newAgent.getCustomers().add(new Customer(a.getCustname(),
+		for (Customer a: changeAgent.getAgentcustomers()) {
+			newAgent.getAgentcustomers().add(new Customer(a.getCustname(),
 													a.getCustcity(),
 													a.getWorkingarea(),
 													a.getCustcountry(),
@@ -56,15 +58,37 @@ public class AgentServiceImpl implements AgentService {
 		return agentrepos.save(newAgent);
 	}
 
+	@Transactional
 	@Override
-	public Agent update(Agent agent, long id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Agent update(Agent changeAgent, long id) {
+		Agent updateAgent = agentrepos.findById(id).orElseThrow(()-> 
+			new EntityNotFoundException("Can not update because Agent Id "+id+" not found."));
+		
+		if (changeAgent.getAgentname()!=null) {updateAgent.setAgentname(changeAgent.getAgentname());}
+		if (changeAgent.getPhone()!=null) {updateAgent.setPhone(changeAgent.getPhone());}
+		
+		if (changeAgent.getAgentcustomers().size()>0) {
+			for (Customer c: changeAgent.getAgentcustomers()) {
+				updateAgent.getAgentcustomers().add(c);
+			}
+		}
+		return agentrepos.save(updateAgent);
 	}
 
+	@Transactional
 	@Override
 	public void delete(long id) {
-		// TODO Auto-generated method stub
+		if (agentrepos.findById(id).isPresent()) {
+			// clean agentcustomers List OneToMany relationship 
+			Agent tmpAgent = agentrepos.findById(id).orElseThrow();
+			for (Customer c: tmpAgent.getAgentcustomers()) {
+				tmpAgent.removeAgentcustomers(c);
+			}
+			
+			agentrepos.deleteById(id);
+		} else {
+			throw new EntityNotFoundException("Can not delete becuase Agent Id "+id+ " is not found.");
+		}
 		
 	}
 	

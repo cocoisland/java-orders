@@ -40,12 +40,13 @@ public class Customer {
 	@ManyToOne
 	@JoinColumn(name = "agentcode", nullable = false)
 	@JsonIgnoreProperties("agentcustomers")	// models.Agent OneToMany List<Customer> agentcustomers
+											// Jackson prevents objects from infinite loop
 	private Agent customersagent;		// join to models.Agent OneToMany mapped by customersagent
 	
 	// models.Order ManyToOne private Customer custorders
 	@OneToMany(mappedBy = "custorders",cascade = CascadeType.ALL)
 	@JsonIgnoreProperties("custorders")
-	private List<Order> orders = new ArrayList<>(); 	// orders used by models.Order ManyToOne 
+	private List<Order> custordersList = new ArrayList<>(); 	// orders used by models.Order ManyToOne 
 	
 
 	// empty constructor required by Spring framework
@@ -158,14 +159,31 @@ public class Customer {
 		this.phone = phone;
 	}
 
-	public Agent getCustomeragent() {
+
+	public Agent getCustomersagent() {
 		return customersagent;
 	}
 
-	public void setCustomeragent(Agent customeragent) {
-		this.customersagent = customeragent;
+	public void setCustomersagent(Agent customersagent) {
+		this.customersagent = customersagent;
+	}
+
+	public List<Order> getCustordersList() {
+		return custordersList;
+	}
+
+	public void setCustordersList(List<Order> custordersList) {
+		this.custordersList = custordersList;
 	}
 	
-	
-	
-}
+	public String toString() {
+		return("\n\tCustomer {"+ 
+				" custname "+custname+" custcity "+custcity+" workingarea "+workingarea+
+				" custcountry "+custcountry+" grade "+grade+
+				" openingamt "+openingamt+" receiveamt "+receiveamt+" paymentamt "+paymentamt+
+				" outstandingamt "+outstandingamt+" phone "+phone+
+				" customersagent "+ customersagent +
+				" custordersList "+custordersList+
+				"}");
+	}
+	}

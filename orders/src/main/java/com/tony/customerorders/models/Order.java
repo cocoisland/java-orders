@@ -33,7 +33,7 @@ public class Order {
 	private Customer custorders;	// used by models.Customer OneToMany mapped by custorders
 	
 	@ManyToMany
-	@JoinTable(name = "OrdersPayments", 
+	@JoinTable(name = "orders_payments", 
 			joinColumns = {@JoinColumn(name="ordnum")},
 			inverseJoinColumns = {@JoinColumn(name="paymentid")}
 			)
@@ -83,14 +83,40 @@ public class Order {
 	public void setOrderdescription(String orderdescription) {
 		this.orderdescription = orderdescription;
 	}
+	
+	public void addPayment(Payment payment) {
+		orderspayments.add(payment);		// payment added to ManyToMany orderspayments list in Order
+		payment.getPaymentsorders().add(this);	// order added to ManyToMany paymentsorders list in Payment
+	}
+	
+	public void removePayment(Payment payment) {
+		orderspayments.remove(payment);
+		payment.getPaymentsorders().remove(this);
+		
+	}
+	
+	@Override
+	public String toString() {
+		return("\n\tOrder{"+" ordamount= "+ordamount+" advanceamount= "+advanceamount+
+				" orderdescription= "+orderdescription+
+				" custorders= "+custorders+
+				" orderspayments= "+orderspayments +"}");
+	}
 
-	public Customer getCustorder() {
+	public Customer getCustorders() {
 		return custorders;
 	}
 
-	public void setCustorder(Customer custorders) {
+	public void setCustorders(Customer custorders) {
 		this.custorders = custorders;
 	}
-	
+
+	public List<Payment> getOrderspayments() {
+		return orderspayments;
+	}
+
+	public void setOrderspayments(List<Payment> orderspayments) {
+		this.orderspayments = orderspayments;
+	}
 
 }

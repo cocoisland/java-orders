@@ -32,7 +32,7 @@ public class Agent {
 	
 	// models.Customer ManyToOne private Agent customersagent
 	@OneToMany(mappedBy = "customersagent", cascade = CascadeType.ALL)
-	@JsonIgnoreProperties("customersagent")
+	@JsonIgnoreProperties("customersagent") // prevent infinite loop
 	private List<Customer> agentcustomers = new ArrayList<>();
 	
 	public Agent() {
@@ -84,6 +84,18 @@ public class Agent {
 		return phone;
 	}
 
+	public List<Customer> getAgentcustomers() {
+		return agentcustomers;
+	}
+
+	public void setAgentcustomers(List<Customer> agentcustomers) {
+		this.agentcustomers = agentcustomers;
+	}
+	
+	public void removeAgentcustomers(Customer customer) {
+		this.agentcustomers.remove(customer);
+	}
+
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
@@ -94,14 +106,6 @@ public class Agent {
 
 	public void setCountry(String country) {
 		this.country = country;
-	}
-
-	public List<Customer> getCustomers() {
-		return agentcustomers;
-	}
-
-	public void setCustomers(List<Customer> customers) {
-		this.agentcustomers = customers;
 	}
 	
 	
